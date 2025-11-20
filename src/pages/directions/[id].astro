@@ -1,0 +1,124 @@
+---
+import { getCollection } from "astro:content";
+import ContentLayout from "../../layouts/ContentLayout.astro";
+
+export async function getStaticPaths() {
+  const directions = await getCollection("directions");
+
+  return directions.map((direction) => ({
+    params: { id: direction.id },
+  }));
+}
+
+const { id } = Astro.params;
+
+const directions = await getCollection("directions");
+const countries = await getCollection("countries");
+const articles = await getCollection("articles");
+
+const direction = directions.find((d) => d.id === id);
+
+if (!direction) {
+  throw new Error(`Direction not found: ${id}`);
+}
+
+const directionCountries = countries.filter(
+  (c) => c.data.direction === direction.id
+);
+
+const directionArticles = articles.filter(
+  (a) => a.data.direction === direction.id
+);
+---
+
+<ContentLayout title={direction.data.label}>
+  <Fragment slot="header">
+    <div class="flex items-center justify-between gap-4">
+      <a href="/" class="text-sm font-semibold tracking-tight font-heading">Experttur</a>
+      <p class="text-xs text-[hsl(var(--muted-foreground))]">
+        Trips curated for {direction.data.label.toLowerCase()}.
+      </p>
+    </div>
+  </Fragment>
+
+  <Fragment slot="sidebar-left">
+    <p class="text-xs font-medium uppercase tracking-[0.18em] text-[hsl(var(--muted-foreground))]">
+      Countries
+    </p>
+    <ul class="mt-3 space-y-1 text-sm">
+      {directionCountries.map((country) => (
+        <li>
+          <a
+            href={`/countries/${country.data.slug}`}
+            class="text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
+          >
+            {country.data.name}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </Fragment>
+
+  <section class="space-y-4">
+    <header class="space-y-1">
+      <p class="text-xs uppercase tracking-[0.18em] text-[hsl(var(--muted-foreground))]">
+        Direction
+      </p>
+      <h1 class="text-3xl font-semibold leading-tight font-heading">
+        {direction.data.label}
+      </h1>
+      {direction.data.description && (
+        <p class="text-sm text-[hsl(var(--muted-foreground))]">
+          {direction.data.description}
+        </p>
+      )}
+    </header>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold font-heading">Featured countries</h2>
+      <div class="grid gap-4 md:grid-cols-2">
+        {directionCountries.map((country) => (
+          <a
+            href={`/countries/${country.data.slug}`}
+            class="group rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--muted))] p-4 text-sm hover:shadow-md"
+          >
+            <h3 class="font-semibold group-hover:underline">{country.data.name}</h3>
+            {country.data.description && (
+              <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
+                {country.data.description}
+              </p>
+            )}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold font-heading">Stories for this direction</h2>
+      <div class="space-y-3">
+        {directionArticles.map((article) => (
+          <a
+            href={`/content/${article.data.slug ?? article.slug}`}
+            class="block rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] p-3 text-sm hover:shadow-sm"
+          >
+            <p class="text-[0.7rem] uppercase tracking-[0.18em] text-[hsl(var(--muted-foreground))]">
+              {article.data.country}
+            </p>
+            <p class="mt-1 font-medium">{article.data.title}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  </section>
+
+  <Fragment slot="sidebar-right">
+    <div class="space-y-2 rounded-xl bg-[hsl(var(--muted))] p-3 text-xs text-[hsl(var(--muted-foreground))]">
+      <p class="font-semibold text-[hsl(var(--foreground))]">Partner space</p>
+      <p>Here we will render PartnerSlot for direction sidebars.</p>
+    </div>
+  </Fragment>
+
+  <Fragment slot="footer">
+    <p>© {new Date().getFullYear()} Experttur.</p>
+  </Fragment>
+</ContentLayout>

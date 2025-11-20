@@ -94,5 +94,21 @@ const heroPartner = partners.find((p) => p.data.position === "home_hero");
 				))}
 			</div>
 		</section>
+
+		<section class="space-y-2">
+			<p class="text-xs uppercase tracking-[0.18em] text-[hsl(var(--muted-foreground))]">
+				Popular directions
+			</p>
+			<div class="flex flex-wrap gap-2 text-xs">
+				{directions.map((direction) => (
+					<a
+						href={`/directions/${direction.id}`}
+						class="rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--muted))] px-3 py-1 font-medium text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
+					>
+						{direction.data.label}
+					</a>
+				))}
+			</div>
+		</section>
 	</div>
 </Layout>

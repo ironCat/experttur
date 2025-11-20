@@ -1,0 +1,87 @@
+---
+import { getCollection } from "astro:content";
+import ContentLayout from "../../layouts/ContentLayout.astro";
+
+export async function getStaticPaths() {
+  const countries = await getCollection("countries");
+
+  return countries.map((country) => ({
+    params: { slug: country.data.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+const countries = await getCollection("countries");
+const articles = await getCollection("articles");
+
+const country = countries.find((c) => c.data.slug === slug);
+
+if (!country) {
+  throw new Error(`Country not found: ${slug}`);
+}
+
+const countryArticles = articles.filter((a) => a.data.country === country.data.id);
+---
+
+<ContentLayout title={country.data.name}>
+  <Fragment slot="header">
+    <div class="flex items-center justify-between gap-4">
+      <a href="/" class="text-sm font-semibold tracking-tight font-heading">Experttur</a>
+      <a href={`/directions/${country.data.direction}`} class="text-xs text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]">
+        Back to direction
+      </a>
+    </div>
+  </Fragment>
+
+  <Fragment slot="sidebar-left">
+    <p class="text-xs font-medium uppercase tracking-[0.18em] text-[hsl(var(--muted-foreground))]">
+      Country
+    </p>
+    <p class="mt-2 text-sm font-medium">{country.data.name}</p>
+    {country.data.region && (
+      <p class="text-xs text-[hsl(var(--muted-foreground))]">Region: {country.data.region}</p>
+    )}
+  </Fragment>
+
+  <section class="space-y-4">
+    <header class="space-y-1">
+      <h1 class="text-3xl font-semibold leading-tight font-heading">
+        {country.data.name}
+      </h1>
+      {country.data.description && (
+        <p class="text-sm text-[hsl(var(--muted-foreground))]">
+          {country.data.description}
+        </p>
+      )}
+    </header>
+
+    <section class="space-y-3">
+      <h2 class="text-lg font-semibold font-heading">Stories about {country.data.name}</h2>
+      <div class="space-y-3">
+        {countryArticles.map((article) => (
+          <a
+            href={`/content/${article.data.slug ?? article.slug}`}
+            class="block rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] p-3 text-sm hover:shadow-sm"
+          >
+            <p class="text-[0.7rem] uppercase tracking-[0.18em] text-[hsl(var(--muted-foreground))]">
+              {article.data.country}
+            </p>
+            <p class="mt-1 font-medium">{article.data.title}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  </section>
+
+  <Fragment slot="sidebar-right">
+    <div class="space-y-2 rounded-xl bg-[hsl(var(--muted))] p-3 text-xs text-[hsl(var(--muted-foreground))]">
+      <p class="font-semibold text-[hsl(var(--foreground))]">Partner space</p>
+      <p>Here we will render PartnerSlot for country sidebars.</p>
+    </div>
+  </Fragment>
+
+  <Fragment slot="footer">
+    <p>© {new Date().getFullYear()} Experttur.</p>
+  </Fragment>
+</ContentLayout>
