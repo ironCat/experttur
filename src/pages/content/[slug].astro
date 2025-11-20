@@ -1,0 +1,62 @@
+---
+import { getCollection } from "astro:content";
+import ContentLayout from "../../layouts/ContentLayout.astro";
+
+const { slug } = Astro.params;
+
+const articles = await getCollection("articles", ({ data }) =>
+  data.slug === slug
+);
+
+if (!articles[0]) {
+  throw new Error(`Article not found for slug: ${slug}`);
+}
+
+const article = articles[0];
+---
+
+<ContentLayout title={article.data.title}>
+  <Fragment slot="header">
+    <div class="flex items-center justify-between gap-4">
+      <a href="/" class="text-sm font-semibold tracking-tight">Experttur</a>
+      <span class="text-xs text-[hsl(var(--muted-foreground))]">Travel insights for US & European explorers</span>
+    </div>
+  </Fragment>
+
+  <Fragment slot="sidebar-left">
+    <p class="text-xs font-medium uppercase tracking-wide text-[hsl(var(--muted-foreground))]">
+      In this section
+    </p>
+    <ul class="mt-2 space-y-1 text-sm text-[hsl(var(--muted-foreground))]">
+      <li>{article.data.country}</li>
+      <li>{article.data.direction}</li>
+    </ul>
+  </Fragment>
+
+  <article class="prose prose-sm max-w-none prose-headings:font-semibold prose-a:text-blue-600">
+    <header class="mb-4 space-y-2">
+      <p class="text-xs uppercase tracking-wide text-[hsl(var(--muted-foreground))]">
+        {article.data.country}
+      </p>
+      <h1 class="text-3xl font-semibold tracking-tight">{article.data.title}</h1>
+      {article.data.excerpt && (
+        <p class="text-sm text-[hsl(var(--muted-foreground))]">{article.data.excerpt}</p>
+      )}
+    </header>
+
+    <slot name="content" />
+
+    {article.body}
+  </article>
+
+  <Fragment slot="sidebar-right">
+    <div class="space-y-2 rounded-xl bg-[hsl(var(--muted))] p-3 text-xs text-[hsl(var(--muted-foreground))]">
+      <p class="font-semibold text-[hsl(var(--foreground))]">Partner space</p>
+      <p>Here we will render PartnerSlot (AdSense) for article sidebars.</p>
+    </div>
+  </Fragment>
+
+  <Fragment slot="footer">
+    <p>© {new Date().getFullYear()} Experttur.</p>
+  </Fragment>
+</ContentLayout>

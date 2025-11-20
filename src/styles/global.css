@@ -2,21 +2,40 @@
 
 @source "../**/*.{astro,html,js,jsx,ts,tsx}";
 
-/* CSS variables for theming (shadcn-style baseline) */
+/* CSS variables for theming (warm travel palette) */
 :root {
+  /* base colors mapped to provided HEX values */
+  /* background: #FFFFFF */
   --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
 
-  --primary: 222.2 47.4% 11.2%;
-  --primary-foreground: 210 40% 98%;
+  /* text: #5B1226 */
+  --foreground: 338 65% 22%;
 
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
+  /* primary: #F8B4B5 */
+  --primary: 359 82% 84%;
+  --primary-foreground: 0 0% 100%;
 
-  --border: 214.3 31.8% 91.4%;
-  --ring: 222.2 84% 4.9%;
+  /* accent background: #FEF4EA */
+  --muted: 31 94% 96%;
+  --muted-foreground: 24 24% 32%;
+
+  /* borders derived from accent */
+  --border: 24 42% 90%;
+  --ring: 359 82% 84%;
+
+  /* typography */
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-heading: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
 }
 
 body {
   @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))];
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+.font-heading {
+  font-family: var(--font-heading);
 }
