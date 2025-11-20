@@ -1,0 +1,9 @@
+{
+  "id": "france",
+  "name": "France",
+  "slug": "france",
+  "heroImage": "/images/countries/france-hero.jpg",
+  "description": "Romantic cities, coastal drives, and mountain escapes tailored for US and European travelers.",
+  "region": "europe",
+  "direction": "europe_travelers"
+}
